@@ -215,7 +215,7 @@ endfunction(add_link_opts)
 
 # Set each output directory according to ${CMAKE_CONFIGURATION_TYPES}.
 # Note: Don't set variables CMAKE_*_OUTPUT_DIRECTORY any more,
-# or a certain builder, for eaxample, msbuild.exe, would be confused.
+# or a certain builder, for example, msbuild.exe, would be confused.
 function(set_output_directory target)
   cmake_parse_arguments(ARG "" "BINARY_DIR;LIBRARY_DIR" "" ${ARGN})
 
@@ -1345,11 +1345,12 @@ function(add_llvm_tool_symlink link_name target)
     if(UNIX)
       set(dest_binary "$<TARGET_FILE_NAME:${target}>")
     endif()
-    if(CMAKE_CONFIGURATION_TYPES)
+    if(CMAKE_CONFIGURATION_TYPES AND NOT "${CMAKE_CFG_INTDIR}" STREQUAL ".")
       list(GET CMAKE_CONFIGURATION_TYPES 0 first_type)
       string(TOUPPER ${first_type} first_type_upper)
       set(first_type_suffix _${first_type_upper})
     endif()
+
     get_target_property(target_type ${target} TYPE)
     if(${target_type} STREQUAL "STATIC_LIBRARY")
       get_target_property(ARG_OUTPUT_DIR ${target} ARCHIVE_OUTPUT_DIRECTORY${first_type_suffix})
@@ -1358,7 +1359,7 @@ function(add_llvm_tool_symlink link_name target)
     else()
       get_target_property(ARG_OUTPUT_DIR ${target} RUNTIME_OUTPUT_DIRECTORY${first_type_suffix})
     endif()
-    if(CMAKE_CONFIGURATION_TYPES)
+    if(CMAKE_CONFIGURATION_TYPES AND NOT "${CMAKE_CFG_INTDIR}" STREQUAL ".")
       string(FIND "${ARG_OUTPUT_DIR}" "/${first_type}/" type_start REVERSE)
       string(SUBSTRING "${ARG_OUTPUT_DIR}" 0 ${type_start} path_prefix)
       string(SUBSTRING "${ARG_OUTPUT_DIR}" ${type_start} -1 path_suffix)
